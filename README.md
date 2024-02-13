@@ -191,6 +191,8 @@ urlpatterns = [
 |Koneksi antara controller dan view dibangun dengan konsep multiple to single| Koneksi one to many dibangun oleh view |
 **Controller** berperan dalam membangun manajemen koneksi antar View dan Model| **ViewModel** berperan dalam membangun manajemen koneksi antara View dan Model |
 
+"Tes"
+
 
 
 
