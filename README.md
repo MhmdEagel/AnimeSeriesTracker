@@ -1,5 +1,7 @@
 # Anime-Tracker
 
+## Tugas 2
+
  - [x] Membuat sebuah proyek Django baru
 
 Untuk Membuat sebuah proyek baru pada django, kita perlu membuka terminal pada path folder direktori, pertama kita perlu membuat folder direktori utama yang menampung semua file projek kita, sebelum itu kita perlu membuat virtual environmet pada folder projek kita dengan perintah
@@ -191,11 +193,159 @@ urlpatterns = [
 |Koneksi antara controller dan view dibangun dengan konsep multiple to single| Koneksi one to many dibangun oleh view |
 **Controller** berperan dalam membangun manajemen koneksi antar View dan Model| **ViewModel** berperan dalam membangun manajemen koneksi antara View dan Model |
 
-"Tes"
+
+## Tugas 3
+
+- [x] Membuat input form untuk menambahkan objek model pada app sebelumnya. 
+
+Untuk membuat form pada aplikasi kita perlu membuat file forms.py pada direktori main, kemudian mengimport ModelForm dari django.forms kemudian membuat class AnimeForm dengan fields sesuai dengan model yang sudah dibuat yaitu name, episodes, synopsis, rating, studio, genre, dan release_date
+
+```
+from django.forms import ModelForm
+from main.models import Anime
+
+class AnimeForm(ModelForm):
+    class Meta:
+        model = Anime
+        fields = ["name", "episodes", "synopsis", "rating", "studio", "genre", "release_date"]
+```
+kemudian mengimport redirect pada views.py yang ada pada folder main
+```
+from django.shortcuts import render, redirect 
+```
+kemudian menambahkan fungsi create_anime yang menerima parameter request pada views.py yang akan menambahkan data ketika form disubmit
+
+```
+def create_anime(request):
+    form = AnimeForm(request.POST or None)
+
+    if form.is_valid() and request.method == "POST":
+        form.save()
+        return redirect('main:show_main')
+
+    context = {'form': form}
+    return render(request, "create_anime.html", context)
+```
+kemudian mengirim data atau objek-objek yang sudah dibuat sebagai context agar bisa ditampilkan di halaman dengan menambahkannya pada context di fungsi show_main
+
+```
+def show_main(request):
+    allAnime = Anime.objects.all()
+    context = {
+        'name': 'Muhammad Eagel Triutama',
+        'class': 'PBP A',
+        'allAnime': allAnime
+        
+    }
+
+    return render(request, "main.html", context)
+```
+
+- [x] Tambahkan 4 fungsi views baru untuk melihat objek yang sudah ditambahkan dalam format XML, JSON, XML by ID, dan JSON by ID.
+
+Untuk menampilkan objek yang telah kita buat dengan menginputkan data melalui form yang sudah kita buat dalam format XML ataupun JSON, kita perlu menginport HttpResponse dari django.http dan serializers dadri django.core untuk memberikan http response kemudian mentranslate objek model menjadi format XML ataupun JSON pada Views.py pada direktori main
+
+```
+from django.http import HttpResponse
+from django.core import serializers
+```
+
+kemudian untuk menangkap dan menampilkan semua data dari objek yang telah kita buat dengan cara menggunakan fungsi all kemudian disimpan kedalam variabel data
+```
+data = Anime.objects.all()
+```
+kemudian membuat fungsi show_xml untuk menampilkan data xml menggunakan serializer dan HttpResponse
+
+```
+def show_xml(request):
+    data = Anime.objects.all()
+    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
+
+```
+
+kemudian membuat fungsi show_json untuk menampilkan data json menggunakan serializer dan HttpResponse
+
+```
+def show_json(request):
+    data = Anime.objects.all()
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+
+```
+
+Untuk menangkap data objek berdasarkan id kita menggunakan fungsi filter() agar mengfilter berdasarkan id yang ada pada objeknya
+
+```
+data = Anime.objects.filter(pk=id)
+```
+
+kemudian membuat fungsi show_xml_by_id dan show_json_by_id untuk menampilkan data pada templates menggunakan httpresponse dan serializer
+```
+def show_xml_by_id(request, id):
+    data = Anime.objects.filter(pk=id)
+    return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")
+
+```
+```
+def show_json_by_id(request, id):
+    data = Anime.objects.filter(pk=id)
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+
+```
+
+- [x] Membuat routing URL untuk masing-masing views yang telah ditambahkan pada poin 2.
+
+Agar Fungsi untuk menunjukkan data berdasarkan xml dan json tampil pada aplikasi yang kita buat, kita perlu melakukan routing url dengan mengedit urls.py pada direktori main dengan mengimport setiap fungsi yang sudah kita buat, kemudian membuat path nya masing-masing, sehingga bisa diakses dengan mengetikkan alamat /json/ atau /xml/
+```
+from main.views import show_main, create_anime, show_xml, show_json, show_xml_by_id, show_json_by_id
+
+app_name = 'main'
+
+urlpatterns = [
+    path('', show_main, name='show_main'),
+    path('create-anime', create_anime, name='create_anime'),
+    path('xml/', show_xml, name='show_xml'), 
+    path('json/', show_json, name='show_json'),
+    path('xml/<int:id>/', show_xml_by_id, name='show_xml_by_id'),
+    path('json/<int:id>/', show_json_by_id, name='show_json_by_id'),
+
+]
+```
+
+### Pertanyaan 
+1. Apa perbedaan antara form POST dan form GET dalam django?
+
+-  form POST django akan mengirimkan data dari form yang kita isi ke server bisa dalam bentuk JSON maupun XML, dan kemudian client akan mendapatkan response dari server sedangkan form GET django akan menerima data yang dikirim ke dalam bentuk string kemudian string tersebut akan digunakan untuk URL.
+  
+2. Apa perbedaan utama antara XML, JSON, dan HTML dalam konteks pengiriman data?
+
+- Dalam pengiriman data XML, JSON, dan HTML memiliki representasi data yang berbeda-beda, JSON memiliki bentuk yang mirip dengan tipe data dictionary atau tipe data objek. XML memiliki bentuk seperti struktur tree yang hampir sama dengan HTML, tree dimulai dengan elemen root sebelum memberikan informasi tentang elemen childnya, JSON dan XML masih berbentuk data yang akan dikirim untuk ditampilkan ke dalam HTML. HTML sendiri digunakan untuk menampilkan data yang diterimanya baik itu XML ataupun JSON agar dapat dilihat oleh client sebagai bentuk informasi yang utuh.
+
+3.  Mengapa JSON sering digunakan dalam pertukaran data antara aplikasi web modern?
+
+- JSON tidak tergantung pada bahasa pemrograman apapun karena menggunakan gaya bahasa yang umum digunakan, juga JSON memiliki bentuk yang tidak bertele-tele layaknya XML yang terdiri dari banyak elemen root.
 
 
 
+- [x] Mengakses keempat URL di poin 2 menggunakan Postman, membuat screenshot dari hasil akses URL pada Postman, dan menambahkannya ke dalam README.md.
 
+
+#### localhost:8000/json
+
+![](pictures/json1.png)
+![](pictures/json2.png)
+![](pictures/json3.png)
+
+
+#### localhost:8000/json/3
+![](pictures/jsonid1.png)
+
+
+### localhost:8000/xml
+![](pictures/xml.png)
+![](pictures/xml2.png)
+
+### localhost:8000/xml/2
+![](pictures/xmlid1.png)
 
 
 

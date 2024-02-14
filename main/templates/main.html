@@ -1,16 +1,37 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-  </head>
-  <body>
+{% extends 'base.html' %} {% block content %}
     <h1>Anime Series Tracker Page</h1>
     <h5>Name:</h5>
     <p>{{name}}</p>
     <h5>Class:</h5>
-    <p>{{class}}</p>
+    <p>{{class}}</p>  
     
-  </body>
-</html>
+    
+    <table>
+        <tr>
+          <th>Name</th>
+          <th>Episodes</th>
+          <th>Synopsis</th>
+          <th>Rating</th>
+          <th>Studio</th>
+          <th>Genre</th>
+          <th>Release Date</th>
+        </tr>
+      
+        {% comment %} Berikut cara memperlihatkan data produk di bawah baris ini
+        {%endcomment %} {% for anime in allAnime %}
+        <tr>
+          <td>{{anime.name}}</td>
+          <td>{{anime.episodes}}</td>
+          <td>{{anime.synopsis}}</td>
+          <td>{{anime.rating}}</td>
+          <td>{{anime.studio}}</td>
+          <td>{{anime.genre}}</td>
+          <td>{{anime.release_date}}</td>
+        </tr>
+        {% endfor %}
+      </table>
+      <br/>
+      <a href="{% url 'main:create_anime' %}">
+        <button>Add New Anime</button>
+      </a>
+{% endblock content %}
