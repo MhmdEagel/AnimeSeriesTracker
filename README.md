@@ -347,6 +347,335 @@ urlpatterns = [
 ### localhost:8000/xml/2
 ![](pictures/xmlid1.png)
 
+## Tugas 4
+- [x] Mengimplementasikan fungsi registrasi, login, dan logout untuk memungkinkan pengguna untuk mengakses aplikasi sebelumnya dengan lancar.
+
+- [x] Membuat dua akun pengguna dengan masing-masing tiga dummy data menggunakan model buku yang telah dibuat pada aplikasi sebelumnya untuk setiap akun di lokal.
+
+- [x] Menghubungkan model Item dengan User.
+
+- [x] Menampilkan detail informasi pengguna yang sedang logged in seperti username dan menerapkan cookies seperti last login pada halaman utama aplikasi.
+
+- [x]  Menjawab beberapa pertanyaan berikut pada README.md pada root folder (silakan modifikasi README.md yang telah kamu buat sebelumnya; tambahkan subjudul untuk setiap tugas).
+  - [x] Apa itu Django UserCreationForm, dan jelaskan apa kelebihan dan kekurangannya?
+  <br><br>
+    Django UserCreationForm merupakan class dari django yang dapat digunakan untuk membuat user baru dari sebuah aplikasi web yang kita buat. Dalam formnya terdapat 3 field yatiu field username, password1, dan password2(field untuk konfirmasi password). Kelebihan dari Django UserCreationForm bisa dengan melakukan request data dari user untuk ditampilkan pada browser dan tidak perlu membuat class form kita sendiri karena sudah disedikan oleh Django. Namun, kekurangannya yaitu pilihan field yang terbatas atau kustomisasi yang terbatas, kita tidak bisa melakukan verifikasi email user karena field tersebut tidak tersedia.
+
+  - [x] Apa perbedaan antara autentikasi dan otorisasi dalam konteks Django, dan mengapa keduanya penting?
+  <br><br>
+  Dalam sistem autentikasi pada Django, Django dapat mengatur atau memanajemen baik itu autentikasi dan autorisasi. Autentikasi sendiri adalah proses verifikasi identitas dari user atau pengguna dari aplikasi Django, sedangkan autorisasi adalah proses menentukan hak akses dari seorang user atau pengguna. Sistem autentikasi dan otorisasi pada Django terdiri dari:
+  - Users / Pengguna
+  - Permissions : berisi binary (yes / no) untuk menetukan apakah user boleh melakukan suatu task pada aplikasi
+  - Forms and View Tools
+  - Configurable password hashing system
+  - Pluggable backend system
+
+  - [x] Apa itu cookies dalam konteks aplikasi web, dan bagaimana Django menggunakan cookies untuk mengelola data sesi pengguna?
+  <br><br>
+  Cookies sendiri adalah kumpulan data yang diterima komputer dari sebuah situs yang mengirimkan kembali ke situs yang dikunjungi, sehingga website bisa menyimpan jejak dan aktivitas yang dilakukan user atau pengguna, di Django untuk menyimpan cookie pada website kita hanya perlu memberikan perintah
+  ```
+  set_cookie(<key value>, <value>)  
+  ```
+  - [x] Apakah penggunaan cookies aman secara default dalam pengembangan web, atau apakah ada risiko potensial yang harus diwaspadai?
+  <br><br>
+  Suatu cookie dari sebuah website yang terpercaya aman untuk diterima. Cookies biasanya hanya digunakan untuk menyimpan user preference, membuat pengalaman browsing pada website lebih smooth, dan proses autentikasi. Cookie sendiri tidak bisa digunakan untuk mendownload malicious software atau software yang berbahaya ataupun mencurigakan. Namun cookie sendiri dapat memancing tindakan cookie poisoning, penyerang dapat mendapatkan hak akses dari pengguna yang terkena cookie poisoning.
+
+  - [x] Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).
+
+  
+Untuk Membuat fungsi registrasi, login, dan logout kita perlu mengimport Django UserCreationForm yang akan kita gunakan untuk mengrender form template dari django yang terdiri dari 3 field username, password, dan confirmation password. Kemudian kita juga akan mengimport redirect serta messages untuk memunculkan pesan syarat-syarat dalam melakukan registrasi
+  <br>
+```
+from django.shortcuts import redirect
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib import messages
+```
+
+kemudian kita akan fungsi register pada views.py di direktori main yang akan melakukan method POST, untuk menyimpan data User pada model
+
+```
+def register(request):
+    form = UserCreationForm()
+
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Your account has been successfully created!')
+            return redirect('main:login')
+    context = {'form':form}
+    return render(request, 'register.html', context)
+```
+
+Kemudian, agar form tersebut tampil di browser, kita perlu membuat template pada folder templates pada direktori main
+```
+{% extends 'base.html' %} 
+
+{% block meta %}
+<title>Register</title>
+{% endblock meta %} 
+
+{% block content %}
+
+<div class="login">
+  <h1>Register</h1>
+
+  <form method="POST">
+    {% csrf_token %}
+    <table>
+      {{ form.as_table }}
+      <tr>
+        <td></td>
+        <td><input type="submit" name="submit" value="Daftar" /></td>
+      </tr>
+    </table>
+  </form>
+
+  {% if messages %}
+  <ul>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</div>
+
+{% endblock content %}
+```
+
+kemudian kita akan menghubungkan url agar dapat diredirect ketika user mengklik tombol register pada browser dengan menambahkan path url pada urlpatterns,
+```
+from main.views import register
+ urlpatterns = [
+     ...
+     path('register/', register, name='register'),
+ ]
+```
+
+Kemudian untuk membuat fungsi login, kita akan mengimport fungsi authenticate dan login dari django, agar dapat melakukan proses autentikasi ketika user melakukan proses login
+
+```
+from django.contrib.auth import authenticate, login
+```
+
+Kemudian kita akan membuat fungsi login_user untuk merender juga mengautentikasi inputan login user
+```
+def login_user(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('main:show_main')
+        else:
+            messages.info(request, 'Sorry, incorrect username or password. Please try again.')
+    context = {}
+    return render(request, 'login.html', context)
+```
+pertama fungsi akan menangkap request yang telah di-POST oleh form register kemudian kita akan melakukan proses autentikasi menggunakan fungsi authenticate, yang mana jika nilai variabel tidak None atau bernilai true, maka akan redirect ke halaman utama dari aplikasi, jika tidak akan mengirim pesan bahwa username atau password dari user itu tidak atau salah.
+
+Kemudian kita akan membuat template agar user dapat login ke aplikasi, dengan membuat file login.html pada folder templates di direktori main
+
+```
+{% extends 'base.html' %}
+
+{% block meta %}
+<title>Login</title>
+{% endblock meta %} 
+
+{% block content %}
+<div class="login">
+  <h1>Login</h1>
+
+  <form method="POST" action="">
+    {% csrf_token %}
+    <table>
+      <tr>
+        <td>Username:</td>
+        <td>
+          <input
+            type="text"
+            name="username"
+            placeholder="Username"
+            class="form-control"
+          />
+        </td>
+      </tr>
+
+      <tr>
+        <td>Password:</td>
+        <td>
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            class="form-control"
+          />
+        </td>
+      </tr>
+
+      <tr>
+        <td></td>
+        <td><input class="btn login_btn" type="submit" value="Login" /></td>
+      </tr>
+    </table>
+  </form>
+
+  {% if messages %}
+  <ul>
+    {% for message in messages %}
+    <li>{{ message }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %} Don't have an account yet?
+  <a href="{% url 'main:register' %}">Register Now</a>
+</div>
+{% endblock content %}
+```
+kemudian lakukan routing url dengan menambah nilai path di urlpatterns pada file urls.py pada direktori main, jangan lupa untuk mengimport login_user.
+```
+from main.views import login_user
+urlpatterns = [
+   ...
+   path('login/', login_user, name='login'),
+]
+```
+
+Kemudian kita akan membuat fungsi logout yang hanya akan meredirect kita kehalaman login (belum menggunakan cookie) dengan mengimport fungsi logout pada views.py, kemudian melakukan routing di urls.py pada direktori main
+
+```
+### views.py
+
+from django.contrib.auth import logout
+def logout_user(request):
+    logout(request)
+    return redirect('main:login')
+```
+```
+### urls.py
+urlpatterns = [
+   ...
+   path('logout/', logout_user, name='logout'),
+]
+```
+kemudian kita akan menambah tombol logout pada main.html
+```
+...
+<a href="{% url 'main:logout' %}">
+  <button>Logout</button>
+</a>
+...
+```
+kemudian kita akan menambahkan fungsi restriksi agar user harus login terlebih dahulu sebelum mengakses halaman main.html, kita perlu mengimport fungsi login_required
+```
+from django.contrib.auth.d1ecorators import login_required
+```
+kemudian kita menambahkan kode @login_required(login_url='/login') di atas fungsi show_main agar halaman main hanya dapat diakses oleh pengguna yang sudah login
+```
+...
+@login_required(login_url='/login')
+def show_main(request):
+...
+```
+
+Kemudian kita akan menerapkan cookies pada website kita agar user atau pengguna tidak perlu login kembali ketika berpindah halaman yaitu dengan mengimport fungsi HttpResponseRedirect, reverse, dan datetime untuk mendapatkan time session ketika user melakukan login saat itu pada views.py. 
+```
+import datetime
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+```
+Kemudian merubah fungsi login_user agar dapat mengirim cookie jam akses aplikasi ketika user login
+```
+...
+if user is not None:
+    login(request, user)
+    response = HttpResponseRedirect(reverse("main:show_main"))
+    response.set_cookie('last_login', str(datetime.datetime.now()))
+    return response
+...
+```
+kemudian kita akan mengirim data cookies melalu context agar dapat ditampilkan pada halaman main.html 
+```
+context = {
+        ...
+         'last_login': request.COOKIES['last_login']
+        ...
+        
+}
+```
+
+kemudian kita akan menghapus cookie ketika user melakukan logout yaitu dengan menggunakan fungsi delete_cookie(key value dari cookie)
+```
+def logout_user(request):
+    logout(request)
+    response = HttpResponseRedirect(reverse('main:login'))
+    response.delete_cookie('last_login')
+    return response
+```
+
+Kemudian untuk menampilkan cookie pada main.html kita akan menambahkan tag header dengan isi dari context last_login
+```
+<h5>Sesi terakhir login: {{ last_login }}</h5>
+```
+
+Kemudian kita akan menghubungkan model Anime dengan user dengan mengimport data User dari django kemudian menambahkan field user di model
+```
+...
+from django.contrib.auth.models import User
+...
+```
+```
+class Book(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    ...
+```
+kemudian agar data tersebut tidak langsung disimpan di database kita perlu menambahkan parameter commit dengan nilai false
+```
+def create_book(request):
+ form = BookForm(request.POST or None)
+
+ if form.is_valid() and request.method == "POST":
+     book = form.save(commit=False)
+     book.user = request.user
+     book.save()
+     return redirect('main:show_main')
+
+ context = {'form': form}
+ return render(request, "create_book.html", context)
+ ...
+```
+kemudian kita akan melakukan filter data tergantung id user agar sesuai dengan data user yang login, kemudian mengirimkan data username melalui konteks agar dapat ditampilkan di main.html
+```
+def show_main(request):
+    books = Book.objects.filter(user=request.user)
+
+    context = {
+         'name': request.user.username,
+         ...
+    }
+...
+```
+
+kemudian jangan lupa lakukan migration dengan mengetikkan perintah
+```
+python manage.py makemigrations
+python manage.py migrate
+```
+data user 1
+![](pictures/dataUser1.png)
+
+data user 2
+![](pictures/dataUser2.png)
 
 
 
+  - [x] Melakukan add-commit-push ke GitHub.
+
+
+
+
+
+
+
+  

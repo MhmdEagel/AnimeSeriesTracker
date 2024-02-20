@@ -1,9 +1,7 @@
 {% extends 'base.html' %} {% block content %}
-    <h1>Anime Series Tracker Page</h1>
-    <h5>Name:</h5>
-    <p>{{name}}</p>
-    <h5>Class:</h5>
-    <p>{{class}}</p>  
+<h1>Anime Series Tracker Page</h1>
+<h2>Welcome {{name}}!</h5>
+<h5>Sesi terakhir login: {{ last_login }}</h5>
     
     
     <table>
@@ -33,5 +31,8 @@
       <br/>
       <a href="{% url 'main:create_anime' %}">
         <button>Add New Anime</button>
+      </a>
+      <a href="{% url 'main:logout' %}">
+        <button>Logout</button>
       </a>
 {% endblock content %}
