@@ -669,9 +669,21 @@ data user 2
 ![](pictures/dataUser2.png)
 
 
-
   - [x] Melakukan add-commit-push ke GitHub.
 
+
+## Tugas 5
+
+- [x] Kustomisasi desain pada templat HTML yang telah dibuat pada Tugas 4 dengan menggunakan CSS atau CSS framework (seperti Bootstrap, Tailwind, Bulma) dengan ketentuan sebagai berikut
+  - [x] Kustomisasi halaman login, register, dan tambah item semenarik mungkin
+  - [x] Kustomisasi halaman daftar item menjadi lebih berwarna dan menggunakan apporach lain selain tabel seperti dengan menggunakan Card.
+- [x] Menambahkan opsi update dan delete pada masing-masing item.
+- [x] Menjawab beberapa pertanyaan berikut pada README.md pada root folder (silakan modifikasi README.md yang telah kamu buat sebelumnya; tambahkan subjudul untuk setiap tugas).
+  - [x] Jelaskan manfaat dari setiap element selector dan kapan waktu yang tepat untuk menggunakannya.
+  - [x] Jelaskan HTML5 Tag yang kamu ketahui.
+  - [x] Jelaskan perbedaan antara margin dan padding.
+  - [x] Jelaskan perbedaan antara framework CSS Tailwind dan Bootstrap. Kapan sebaiknya kita menggunakan Bootstrap daripada Tailwind, dan sebaliknya?
+- [x] Melakukan add-commit-push ke GitHub.
 
 
 
