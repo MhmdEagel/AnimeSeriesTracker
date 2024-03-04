@@ -2,40 +2,36 @@
 {% block meta %}
 <title>Login</title>
 {% endblock meta %}
-
 {% block content %}
-<div class="d-flex justify-content-center align-items-center position-absolute w-100 h-100">
-  <div class="login border p-5 rounded-5 shadow-sm" style="width: fit-content;">
-    <h5 class="text-center mb-4">Login</h5>
-    <form method="POST" action="">
-      {% csrf_token %}
-      <table class="table table-borderless align-middle">
-        <tr>
-          <td>Username</td>
-          <td>
-            <input type="text" name="username" placeholder="Username" class="form-control" />
-          </td>
-        </tr>
+<div class="d-flex justify-content-center align-items-center position-absolute w-100 h-100"
+  style="background-color: #ea580c;">
+  <div class="login border p-5 rounded-5 shadow-sm d-flex justify-content-center align-items-center bg-white">
+    <div class="pe-4 form-container">
+      <h5 class="text-center mb-4">Sign in</h5>
+      <form method="POST" action="">
+        {% csrf_token %}
+        <div class="mb-3">
+          <input type="text" name="username" placeholder="Username" class="form-control w-100" id="login-input" />
+        </div>
+        <div class="mb-4">
+          <input type="password" name="password" placeholder="Password" class="form-control w-100" id="login-input" />
+        </div>
 
-        <tr>
-          <td>Password</td>
-          <td>
-            <input type="password" name="password" placeholder="Password" class="form-control" />
-          </td>
-        </tr>
-      </table>
-      <input class="btn btn-primary mb-4 w-100" type="submit" value="Login" />
-    </form>
 
-    {% if messages %}
-    <ul>
-      {% for message in messages %}
-      <li>{{ message }}</li>
-      {% endfor %}
-    </ul>
-    {% endif %} Don't have an account yet?
-    <a href="{% url 'main:register' %}">Register Now</a>
-    
+        <input class="btn login-btn rounded-pill mb-4 w-100" type="submit" value="Login" style="color: white;" />
+      </form>
+
+      {% if messages %}
+
+      {% endif %} Don't have an account yet?
+      <a href="{% url 'main:register' %}" style="color: black; text-decoration: none;"
+        onmouseover="this.style.color = '#ea580c'" onmouseleave="this.style.color = 'black'"><strong>Sign
+          Up</strong></a>
+    </div>
+    {% load static %}
+    <div>
+      <img src="{% static 'login.png' %}" width="450" alt="">
+    </div>
   </div>
 </div>
 

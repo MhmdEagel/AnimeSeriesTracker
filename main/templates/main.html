@@ -1,37 +1,48 @@
 {% extends 'base.html' %} {% block content %}
-<h1>Anime Series Tracker Page</h1>
-<h2>Welcome {{name}}!</h5>
-<h5>Sesi terakhir login: {{ last_login }}</h5>
-    
-    
-    <table>
-        <tr>
-          <th>Name</th>
-          <th>Episodes</th>
-          <th>Synopsis</th>
-          <th>Rating</th>
-          <th>Studio</th>
-          <th>Genre</th>
-          <th>Release Date</th>
-        </tr>    
-        {% comment %} Berikut cara memperlihatkan data produk di bawah baris ini
-        {%endcomment %} {% for anime in allAnime %}
-        <tr>
-          <td>{{anime.name}}</td>
-          <td>{{anime.episodes}}</td>
-          <td>{{anime.synopsis}}</td>
-          <td>{{anime.rating}}</td>
-          <td>{{anime.studio}}</td>
-          <td>{{anime.genre}}</td>
-          <td>{{anime.release_date}}</td>
-        </tr>
-        {% endfor %}
-      </table>
+      <nav class="d-flex justify-content-between" style="background-color: #ea580c;">
+        <div class="d-flex justify-content-center align-items-center" style="width: fit-content;">
+          {% load static %}
+          <img src="{% static 'icon.png' %}" width="100" alt="">
+          <h5>Anime Tracker</h5>
+        </div>
+        <div class="d-flex justify-content-center align-items-center gap-4 me-4">
+          <h5>@{{name}}</h5>
+          <a href="{% url 'main:logout' %}" class="logout-btn">
+            <h5 class="btn btn-light" style="font-weight: 600;">Logout</h5>
+          </a>
+        </div>
+      </nav>
+      
+      <section class="mx-auto border p-4 mt-5 position-relative" style="width: fit-content; ">
+        <h5 class="text-center">All Anime</h5>
+        <div class="d-flex flex-wrap justify-content-center align-items-center">
+          {% for anime in allAnime %}
+          <div class="card shadow-sm p-4 m-4 bg-white" style="width: 24rem;">
+            <div class="card-body">
+              <h5 class="card-title mb-4">{{anime.name}}</h5>
+              <div class="card-subtitle mb-2 text-body-secondary">
+                {% load static %}
+                <img src="{% static 'star.png' %}" alt="" width="15">
+                <span>{{anime.rating}}</span>
+              </div>
+              <p class="card-text">Episode: {{anime.episodes}}</p>
+              <p class="card-text">Studio: {{anime.studio}}</p>
+              <p class="card-text">Genre: {{anime.genre}}</p>
+              <p class="card-text">Aired: {{anime.release_date}}</p>
+              <p class="card-text" style="text-align: justify;">{{anime.synopsis}}</p>
+              <div class="text-end">
+                <a id="delete" href="{% url 'main:delete_anime' anime.pk %}"><i class="fa-solid fa-trash" ></i></a>
+                <a id="edit" href="{% url 'main:edit_anime' anime.pk %}"><i class="fa-solid fa-pen" ></i></a>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div> 
+        <a href="{% url 'main:create_anime' %}" class="d-flex justify-content-center align-items-center position-absolute top-0 start-100 translate-middle z-3  " style="border-radius: 100%; width: 50px; height: 50px; text-decoration: none; display: block;" id="add-anime">
+          <i class="fa-solid fa-plus"></i>
+        </a>
+      </section>
+      
       <br/>
-      <a href="{% url 'main:create_anime' %}">
-        <button>Add New Anime</button>
-      </a>
-      <a href="{% url 'main:logout' %}">
-        <button>Logout</button>
-      </a>
+      
 {% endblock content %}

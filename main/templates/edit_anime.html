@@ -1,10 +1,13 @@
-{% extends 'base.html' %} {% block content %}
+{% extends 'base.html' %}
 
+{% load static %}
+
+{% block content %}
 
 <div class="d-flex justify-content-center align-items-center position-absolute w-100 h-100" 
   style="background-color: #ea580c; overflow: hidden;">
   <div class="login border p-5 rounded-5 shadow-sm bg-white">
-    <h5 class="text-center mb-4">Add New Anime</h5>
+    <h5 class="text-center mb-4">Edit Anime</h5>
     <form method="POST">
       {% csrf_token %}
       <table class="table table-borderless">
@@ -15,9 +18,8 @@
           </td>
         </tr>
       </table>
-      <input type="submit" value="Add Anime" class="btn btn-primary mb-4 w-100 create-btn" />
+      <input type="submit" value="Edit Anime" class="btn btn-primary mb-4 w-100 create-btn" />
     </form>
   </div>
 </div>
-
 {% endblock %}

@@ -72,6 +72,26 @@ def logout_user(request):
     response.delete_cookie('last_login')
     return response
 
+def edit_anime(request, id):
+    
+    anime = Anime.objects.get(pk = id)
+
+    form = AnimeForm(request.POST or None, instance=anime)
+
+    if form.is_valid() and request.method == "POST":
+    
+        form.save()
+        return HttpResponseRedirect(reverse('main:show_main'))
+
+    context = {'form': form}
+    return render(request, "edit_anime.html", context)
+
+def delete_anime(request, id):
+    anime = Anime.objects.get(pk = id)
+    anime.delete()
+    return HttpResponseRedirect(reverse('main:show_main'))
+
+
 def show_xml(request):
     data = Anime.objects.all()
     return HttpResponse(serializers.serialize("xml", data), content_type="application/xml")

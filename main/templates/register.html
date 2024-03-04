@@ -1,32 +1,31 @@
-{% extends 'base.html' %} 
+{% extends 'base.html' %}
 
 {% block meta %}
 <title>Register</title>
-{% endblock meta %} 
+{% endblock meta %}
 
 {% block content %}
 
-<div class="login">
-  <h1>Register</h1>
+<div class="d-flex justify-content-center align-items-center position-absolute w-100 h-100"
+  style="background-color: #ea580c;">
+  <div class="login border p-5 rounded-5 shadow-sm d-flex justify-content-center align-items-center bg-white">
+    <form method="POST">
+      <h5 class="text-center mb-4">Create an account</h5>
+      {% csrf_token %}
+      <table class="table table-borderless align-middle mb-4" style="width: fit-content;">
+        {{ form.as_table }}
+        
+      </table>
+      <input type="submit" name="submit" value="Sign up" class="btn btn-primary mb-4 w-100" />
+    </form>
 
-  <form method="POST">
-    {% csrf_token %}
-    <table>
-      {{ form.as_table }}
-      <tr>
-        <td></td>
-        <td><input type="submit" name="submit" value="Daftar" /></td>
-      </tr>
-    </table>
-  </form>
+    {% if messages %}
+    <ul>
+      {% for message in messages %}
+      <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </div>
 
-  {% if messages %}
-  <ul>
-    {% for message in messages %}
-    <li>{{ message }}</li>
-    {% endfor %}
-  </ul>
-  {% endif %}
-</div>
-
-{% endblock content %}
+  {% endblock content %}
