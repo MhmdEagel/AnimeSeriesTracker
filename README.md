@@ -680,9 +680,36 @@ data user 2
 - [x] Menambahkan opsi update dan delete pada masing-masing item.
 - [x] Menjawab beberapa pertanyaan berikut pada README.md pada root folder (silakan modifikasi README.md yang telah kamu buat sebelumnya; tambahkan subjudul untuk setiap tugas).
   - [x] Jelaskan manfaat dari setiap element selector dan kapan waktu yang tepat untuk menggunakannya.
+      <br>
+      ->  Ada 5 cara untuk menyeleksi elemen dalam css:
+      1. Simple selector
+      <br>
+      -> Menyeleksi element berdasarkan nama tag, class, dan id
+      2. Combinator Selectors
+      <br>
+      -> Menyeleksi element berdasarkan hubungan kekeluargaan di dalam dom tree
+      3. Pseudo-class selector
+      -> Menyeleksi element berdasarkan pada keadaan tertentu
+      4. Pseudo-element selector
+      -> menyeleksi element berdasarkan pada bagian terentu pada sebuah element
+      5. Attribute Selector
+      -> menyeleksi element berdasarkan pada atribut tertentu pada sebuah element tertentu
   - [x] Jelaskan HTML5 Tag yang kamu ketahui.
+    <br>
+    1. "header" -> Digunakan untuk mendefinisikan header dari suatu bagian atau keseluruhan halaman.
+    2. "nav" -> Digunakan untuk mendefinisikan bagian navigasi dalam halaman web.
+    3. "main" -> Digunakan untuk mengidentifikasi konten utama dalam sebuah halaman.
+    4. "article" -> Digunakan untuk mendefinisikan konten yang independen dan dapat berdiri sendiri.
+    5. "section" -> Digunakan untuk mengelompokkan konten terkait dalam sebuah halaman.
+    6. "aside" -> Digunakan untuk konten yang sedikit terkait dengan konten sekitarnya, seperti sidebar atau iklan.
+    7. "footer" -> Mendefinisikan footer dari suatu bagian atau keseluruhan halaman.
+    8. "figure" -> Digunakan untuk mengelompokkan media seperti gambar, diagram, atau video bersama dengan caption.
+    9. "figcaption" -> Digunakan bersama dengan "figure" untuk memberikan caption pada media tersebut.
   - [x] Jelaskan perbedaan antara margin dan padding.
+    <br>
+    -> Margin memengaruhi ruang di sekitar elemen, sementara padding memengaruhi ruang di dalam elemen. 
   - [x] Jelaskan perbedaan antara framework CSS Tailwind dan Bootstrap. Kapan sebaiknya kita menggunakan Bootstrap daripada Tailwind, dan sebaliknya?
+    -> Tailwind CSS menawarkan lebih banyak fleksibilitas dan penyesuaian, sementara Bootstrap memberikan pengalaman pengembangan cepat dengan komponen siap pakai. 
 - [x] Melakukan add-commit-push ke GitHub.
 
 
