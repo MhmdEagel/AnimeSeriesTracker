@@ -390,7 +390,7 @@ from django.shortcuts import redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 ```
-
+3
 kemudian kita akan fungsi register pada views.py di direktori main yang akan melakukan method POST, untuk menyimpan data User pada model
 
 ```

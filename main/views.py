@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 import datetime
 from django.http import HttpResponseRedirect
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 
 
 # Create your views here.
@@ -38,6 +39,25 @@ def create_anime(request):
 
     context = {'form': form}
     return render(request, "create_anime.html", context)
+
+@csrf_exempt
+def add_anime_ajax(request):
+    if request.method == 'POST':
+        name = request.POST.get("name")
+        episodes = request.POST.get("episodes")
+        synopsis = request.POST.get("synopsis")
+        rating = request.POST.get("rating")
+        studio = request.POST.get("studio")
+        genre = request.POST.get("genre")
+        release_date = request.POST.get("release_date")
+        user = request.user
+
+        new_anime = Anime(name=name, episodes=episodes, synopsis=synopsis, rating=rating, studio=studio, genre=genre, release_date=release_date, user=user)
+        new_anime.save()
+        return HttpResponse(b"CREATED", status=201)
+    return HttpResponseNotFound()
+    
+
 
 def register(request):
     form = UserCreationForm()

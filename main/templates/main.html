@@ -1,48 +1,129 @@
 {% extends 'base.html' %} {% block content %}
-      <nav class="d-flex justify-content-between" style="background-color: #ea580c;">
-        <div class="d-flex justify-content-center align-items-center" style="width: fit-content;">
-          {% load static %}
-          <img src="{% static 'icon.png' %}" width="100" alt="">
-          <h5>Anime Tracker</h5>
-        </div>
-        <div class="d-flex justify-content-center align-items-center gap-4 me-4">
-          <h5>@{{name}}</h5>
-          <a href="{% url 'main:logout' %}" class="logout-btn">
-            <h5 class="btn btn-light" style="font-weight: 600;">Logout</h5>
-          </a>
-        </div>
-      </nav>
-      
-      <section class="mx-auto border shadow-sm p-4 mt-5 position-relative" style="width: fit-content; ">
-        <h5 class="text-center">All Anime</h5>
-        <div class="d-flex flex-wrap justify-content-center align-items-center">
-          {% for anime in allAnime %}
-          <div class="card shadow-sm p-4 m-4 bg-white" style="width: 24rem;">
-            <div class="card-body">
-              <h5 class="card-title mb-4">{{anime.name}}</h5>
-              <div class="card-subtitle mb-2 text-body-secondary">
-                {% load static %}
-                <img src="{% static 'star.png' %}" alt="" width="15">
-                <span>{{anime.rating}}</span>
-              </div>
-              <p class="card-text">Episode: {{anime.episodes}}</p>
-              <p class="card-text">Studio: {{anime.studio}}</p>
-              <p class="card-text">Genre: {{anime.genre}}</p>
-              <p class="card-text">Aired: {{anime.release_date}}</p>
-              <p class="card-text" style="text-align: justify;">{{anime.synopsis}}</p>
-              <div class="text-end">
-                <a id="delete" href="{% url 'main:delete_anime' anime.pk %}"><i class="fa-solid fa-trash" ></i></a>
-                <a id="edit" href="{% url 'main:edit_anime' anime.pk %}"><i class="fa-solid fa-pen" ></i></a>
-              </div>
-            </div>
+<nav class="d-flex justify-content-between" style="background-color: #ea580c;">
+  <div class="d-flex justify-content-center align-items-center" style="width: fit-content;">
+    {% load static %}
+    <img src="{% static 'icon.png' %}" width="100" alt="">
+    <h5>Anime Tracker</h5>
+  </div>
+  <div class="d-flex justify-content-center align-items-center gap-4 me-4">
+    <h5>@{{name}}</h5>
+    <a href="{% url 'main:logout' %}" class="logout-btn">
+      <h5 class="btn btn-light" style="font-weight: 600;">Logout</h5>
+    </a>
+  </div>
+</nav>
+
+<section class="mx-auto border shadow-sm p-4 mt-5 position-relative" style="width: fit-content; ">
+  <h5 class="text-center">All Anime</h5>
+  <div class="d-flex flex-wrap justify-content-center align-items-center" id="card-container" style="max-width: 64rem;">
+  </div>
+  <div data-bs-toggle="modal" data-bs-target="#exampleModal"
+    class="d-flex justify-content-center align-items-center position-absolute top-0 start-100 translate-middle z-3  "
+    style="border-radius: 100%; width: 50px; height: 50px; text-decoration: none; display: block;" id="add-anime">
+    <i class="fa-solid fa-plus"></i>
+  </div>
+</section>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Add New Anime</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
-          {% endfor %}
-        </div> 
-        <a href="{% url 'main:create_anime' %}" class="d-flex justify-content-center align-items-center position-absolute top-0 start-100 translate-middle z-3  " style="border-radius: 100%; width: 50px; height: 50px; text-decoration: none; display: block;" id="add-anime">
-          <i class="fa-solid fa-plus"></i>
-        </a>
-      </section>
-      
-      <br/>
-      
+          <div class="modal-body">
+              <form id="form" onsubmit="return false;">
+                  {% csrf_token %}
+                  <div class="mb-3">
+                      <label for="name" class="col-form-label">Name:</label>
+                      <input type="text" class="form-control" id="name" name="name"></input>
+                  </div>
+                  <div class="mb-3">
+                      <label for="episodes" class="col-form-label">Episodes:</label>
+                      <input type="number" class="form-control" id="episodes" name="episodes"></input>
+                  </div>
+                  <div class="mb-3">
+                      <label for="synopsis" class="col-form-label">Synopsis:</label>
+                      <textarea class="form-control" id="synopsis" name="synopsis"></textarea>
+                  </div>
+                  <div class="mb-3">
+                      <label for="rating" class="col-form-label">Rating:</label>
+                      <input type="number" class="form-control" id="rating" name="rating"></input>
+                  </div>
+                  <div class="mb-3">
+                      <label for="studio" class="col-form-label">Studio:</label>
+                      <input type="text" class="form-control" id="studio" name="studio"></input>
+                  </div>
+                  <div class="mb-3">
+                      <label for="genre" class="col-form-label">Genre:</label>
+                      <input type="text" class="form-control" id="genre" name="genre"></input>
+                  </div>
+                  <div class="mb-3">
+                      <label for="release_date" class="col-form-label">Release Date:</label>
+                      <input type="text" class="form-control" id="release_date" name="release_date"></input>
+                  </div>
+              </form>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" id="button_add" data-bs-dismiss="modal">Add Anime</button>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="m-4">
+  <p>{{last_login}}</p>
+</div>
+
+<br />
+<script>
+  document.getElementById("button_add").onclick = addAnime
+  async function getAnimes() {
+    return fetch("{% url 'main:show_json' %}").then((res) => res.json())
+  }
+
+  let userId = "{{user.id}}"
+
+  function addAnime() {
+        fetch("{% url 'main:add_anime_ajax' %}", {
+            method: "POST",
+            body: new FormData(document.querySelector('#form'))
+        }).then(refreshAnimes)
+        document.getElementById("form").reset()
+        return false
+  }
+
+  async function refreshAnimes() {
+    document.getElementById("card-container").innerHTML = ""
+    const animes = await getAnimes()
+    let htmlString = ""
+    animes.forEach((item) => {
+      if (item.fields.user == userId) {
+      htmlString += `\n<div class="card shadow-sm p-4 m-4 bg-white" style="width: 24rem;">
+      <div class="card-body">
+        <h5 class="card-title mb-4">${item.fields.name}</h5>
+        <div class="card-subtitle mb-2 text-body-secondary">
+          {% load static %}
+          <img src="{% static 'star.png' %}" alt="" width="15">
+          <span>${item.fields.rating}</span>
+        </div>
+        <p class="card-text">Episode: ${item.fields.episodes}</p>
+        <p class="card-text">Studio: ${item.fields.studio}</p>
+        <p class="card-text">Genre: ${item.fields.genre}</p>
+        <p class="card-text">Aired: ${item.fields.release_date}</p>
+        <p class="card-text" style="text-align: justify;">${item.fields.synopsis}</p>
+        <div class="text-end">
+          <a id="delete" href=${"{% url 'main:delete_anime anime.pk %'}"}><i class="fa-solid fa-trash"></i></a>
+          <a id="edit" href=${"{% url 'main:edit_anime anime.pk %'}"}><i class="fa-solid fa-pen"></i></a>
+        </div>
+      </div>
+    </div>`
+      }
+    })
+    document.getElementById("card-container").innerHTML = htmlString
+  }
+  refreshAnimes()
+  
+</script>
 {% endblock content %}

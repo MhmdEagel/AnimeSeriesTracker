@@ -4,4 +4,4 @@ from main.models import Anime
 class AnimeForm(ModelForm):
     class Meta:
         model = Anime
-        fields = ["name", "episodes", "synopsis", "rating", "studio", "genre", "release_date"]
+        fields = ["name", "episodes", "synopsis", "rating", "studio", "genre", "release_date"]  
