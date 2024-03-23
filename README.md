@@ -713,6 +713,200 @@ data user 2
 - [x] Melakukan add-commit-push ke GitHub.
 
 
+## Tugas 6
+
+- [x] Mengubah tugas 5 yang telah dibuat sebelumnya menjadi menggunakan AJAX.
+
+- [x] AJAX GET
+- [x] Ubahlah kode cards data item agar dapat mendukung AJAX GET.
+- [x] Lakukan pengambilan task menggunakan AJAX GET.
+- [x] AJAX POST
+
+- [x] Buatlah sebuah tombol yang membuka sebuah modal dengan form untuk menambahkan item.
+
+- [x] Buatlah fungsi view baru untuk menambahkan item baru ke dalam basis data.
+
+- [x] Buatlah path /create-ajax/ yang mengarah ke fungsi view yang baru kamu buat.
+- [x] Hubungkan form yang telah kamu buat di dalam modal kamu ke path /create-ajax/.
+- [x] Lakukan refresh pada halaman utama secara asinkronus untuk menampilkan daftar item terbaru tanpa reload halaman utama secara keseluruhan.
+- [x] Menjawab beberapa pertanyaan berikut pada README.md pada root folder (silakan modifikasi README.md yang telah kamu buat sebelumnya; tambahkan subjudul untuk setiap tugas).
+
+- Jelaskan perbedaan antara asynchronous programming dengan synchronous programming.
+ <br> <br>
+ Synchronous programming memiliki pendekatan dimana akan mengeksekusi task sesuai urutan yang telah ditentukan, task selanjutnya tidak akan dieksekusi sebelum task sebelumnya akan dieksekusi sedangkan asynchronous tidak perlu menunggu task sebelumnya untuk dieksekusi, task akan dieksekusi dalam satu waktu
+ 
+
+- Dalam penerapan JavaScript dan AJAX, terdapat penerapan paradigma event-driven programming. Jelaskan maksud dari paradigma tersebut dan sebutkan salah satu contoh penerapannya pada tugas ini.
+ <br> <br>
+ Event driven programming merupakan paradigma yang akan fokus pada interaksi antar komponen pada antarmuka melalui sebuah event atau peristiwa yang ditrigger oleh user atau pengguna, contohnya pada tugas ini yaitu ketika kita mengklik tomboh tambah pada halaman main.html makan jendela modal untuk menambahkan anime akan muncul
+ 
+- Jelaskan penerapan asynchronous programming pada AJAX.
+Pada PBP kali ini, penerapan AJAX dilakukan dengan menggunakan Fetch API daripada library jQuery. Bandingkanlah kedua teknologi tersebut dan tuliskan pendapat kamu teknologi manakah yang lebih baik untuk digunakan.
+ <br> <br>
+ Secara kompatibilitas  jQuery mendukung sebagian besar browser modern dan juga beberapa browser yang lebih tua. sedangkan Fetch API baru-baru ini diperkenalkan dalam peramban modern, sehingga tidak sepenuhnya didukung di semua browser, terutama versi yang lebih lama. Namun, biasanya dapat diatasi dengan menggunakan polifil (polyfill) atau transpiler seperti Babel, untuk sintaksis jQuery cenderung lebih ringkas dan mudah dipahami bagi banyak pengembang sedangkan Fetch API sedikit lebih verbose dan berbasis Promise.
+
+
+- Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step (bukan hanya sekadar mengikuti tutorial).
+
+<br>
+
+Pertama kita harus membuat fungsi baru pada views.py untuk menambahkan anime yang akan menerima parameter request, dan mengimport csrf_exempt
+```
+from django.views.decorators.csrf import csrf_exempt
+```
+
+kemudian menambahkan dekorator @csrf_exempt di atas fungsi add_anime_ajax yang sudah dibuat.
+
+```
+def add_anime_ajax(request):
+    if request.method == 'POST':
+        name = request.POST.get("name")
+        episodes = request.POST.get("episodes")
+        synopsis = request.POST.get("synopsis")
+        rating = request.POST.get("rating")
+        studio = request.POST.get("studio")
+        genre = request.POST.get("genre")
+        release_date = request.POST.get("release_date")
+        user = request.user
+
+        new_anime = Anime(name=name, episodes=episodes, synopsis=synopsis, rating=rating, studio=studio, genre=genre, release_date=release_date, user=user)
+        new_anime.save()
+        return HttpResponse(b"CREATED", status=201)
+    return HttpResponseNotFound()
+```
+kemudian menambahkan routing pada add_anime_ajax pada urls.py yang akan mengarah kepada fungsi add_anime_ajax yang sudah dibuat di views.py
+```
+path('add-anime-ajax/', add_anime_ajax, name='add_anime_ajax'),
+```
+Kemudian kita perlu menangkap data dari model Anime untuk ditampilkan ke halaman web pada main.html, dengan menggunakan fetch api pada JavaScript
+
+```
+  async function getAnimes() {
+    return fetch("{% url 'main:show_json' %}").then((res) => res.json())
+  }
+```
+
+Kemudian kita perlu menambahkan fungsi refresh anime untuk mengrefresh anime secara asynchronous
+
+```
+async function refreshAnimes() {
+    document.getElementById("card-container").innerHTML = ""
+    const animes = await getAnimes()
+    let htmlString = ""
+    animes.forEach((item) => {
+      if (item.fields.user == userId) {
+      htmlString += `\n<div class="card shadow-sm p-4 m-4 bg-white" style="width: 24rem;">
+      <div class="card-body">
+        <h5 class="card-title mb-4">${item.fields.name}</h5>
+        <div class="card-subtitle mb-2 text-body-secondary">
+          {% load static %}
+          <img src="{% static 'star.png' %}" alt="" width="15">
+          <span>${item.fields.rating}</span>
+        </div>
+        <p class="card-text">Episode: ${item.fields.episodes}</p>
+        <p class="card-text">Studio: ${item.fields.studio}</p>
+        <p class="card-text">Genre: ${item.fields.genre}</p>
+        <p class="card-text">Aired: ${item.fields.release_date}</p>
+        <p class="card-text" style="text-align: justify;">${item.fields.synopsis}</p>
+        <div class="text-end">
+          <a id="delete" href=${"{% url 'main:delete_anime anime.pk %'}"}><i class="fa-solid fa-trash"></i></a>
+          <a id="edit" href=${"{% url 'main:edit_anime anime.pk %'}"}><i class="fa-solid fa-pen"></i></a>
+        </div>
+      </div>
+    </div>`
+      }
+    })
+    document.getElementById("card-container").innerHTML = htmlString
+  }
+```
+
+Setelah itu kita akan menambahkan modal pada halaman html yang mana ketika mengklik tomboh tambah akan muncul sebuah jendela yang berisi form untuk menambahkan anime ke database
+
+```
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content">
+          <div class="modal-header">
+              <h1 class="modal-title fs-5" id="exampleModalLabel">Add New Anime</h1>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+              <form id="form" onsubmit="return false;">
+                  {% csrf_token %}
+                  <div class="mb-3">
+                      <label for="name" class="col-form-label">Name:</label>
+                      <input type="text" class="form-control" id="name" name="name"></input>
+                  </div>
+                  <div class="mb-3">
+                      <label for="episodes" class="col-form-label">Episodes:</label>
+                      <input type="number" class="form-control" id="episodes" name="episodes"></input>
+                  </div>
+                  <div class="mb-3">
+                      <label for="synopsis" class="col-form-label">Synopsis:</label>
+                      <textarea class="form-control" id="synopsis" name="synopsis"></textarea>
+                  </div>
+                  <div class="mb-3">
+                      <label for="rating" class="col-form-label">Rating:</label>
+                      <input type="number" class="form-control" id="rating" name="rating"></input>
+                  </div>
+                  <div class="mb-3">
+                      <label for="studio" class="col-form-label">Studio:</label>
+                      <input type="text" class="form-control" id="studio" name="studio"></input>
+                  </div>
+                  <div class="mb-3">
+                      <label for="genre" class="col-form-label">Genre:</label>
+                      <input type="text" class="form-control" id="genre" name="genre"></input>
+                  </div>
+                  <div class="mb-3">
+                      <label for="release_date" class="col-form-label">Release Date:</label>
+                      <input type="text" class="form-control" id="release_date" name="release_date"></input>
+                  </div>
+              </form>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+              <button type="button" class="btn btn-primary" id="button_add" data-bs-dismiss="modal">Add Anime</button>
+          </div>
+      </div>
+  </div>
+</div>
+```
+
+kemudian kita akan menambahkan tomboh yang akan memunculkan modal pada halaman main.html
+
+```
+<div data-bs-toggle="modal" data-bs-target="#exampleModal"
+    class="d-flex justify-content-center align-items-center position-absolute top-0 start-100 translate-middle z-3  "
+    style="border-radius: 100%; width: 50px; height: 50px; text-decoration: none; display: block;" id="add-anime">
+    <i class="fa-solid fa-plus"></i>
+  </div>
+```
+
+untuk menambahkan anime secara AJAX kita perlu menambahkan fungsi addAnime pada tag script yang telah kita buat tadi
+
+```
+  function addAnime() {
+        fetch("{% url 'main:add_anime_ajax' %}", {
+            method: "POST",
+            body: new FormData(document.querySelector('#form'))
+        }).then(refreshAnimes)
+        document.getElementById("form").reset()
+        return false
+  }
+```
+
+kemudian kita akan mengarahkan fungsi addAnime pada tombol yang sudah kita buat tadi dengan event onclick dengan id nya yaitu add-anime
+
+```
+document.getElementById("button_add").onclick = addAnime
+```
+
+
+- [x] Melakukan add-commit-push ke GitHub.
+
+
+
+
 
 
 
